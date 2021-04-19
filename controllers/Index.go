@@ -9,7 +9,6 @@ import (
 	"github.com/go-redis/redis"
 )
 
-
 type User struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
