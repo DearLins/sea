@@ -17,7 +17,7 @@ type User struct {
 }
 
 func Index(c *gin.Context) {
-	db, err := sql.Open("mysql", "root:honglin1@tcp(127.0.0.1:3306)/gotest")
+	db, err := sql.Open("mysql", "root:honglin1@tcp(47.94.136.121:3306)/gotest")
 	fmt.Println(db)
 	defer db.Close()
 	if err != nil {
@@ -60,7 +60,7 @@ var rdb *redis.Client
 
 func initClient() (err error) {
 	rdb = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "47.94.136.121:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
