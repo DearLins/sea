@@ -1,0 +1,25 @@
+#app
+app_host: "127.0.0.1"
+app_port: 8090
+
+#mysql
+mysql_host: "127.0.0.1"
+mysql_port: 3306
+mysql_database: "gotest"
+mysql_usernam: "root"
+mysql_password: "honglin1"
+mysql_charset: "utf8mb4"
+mysql_collation: "utf8mb4_unicode_ci"
+mysql_prefix: ""
+
+#redis
+redis_host: "127.0.0.1"
+redis_pwd: ""
+redis_port: 6379
+redis_database: 0,
+
+#page
+page_size: 5
+
+#log
+path: ""

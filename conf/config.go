@@ -1,58 +1,55 @@
 package conf
 
 import (
-	"bufio"
-	"encoding/json"
-	"os"
+	"flag"
+	"io/ioutil"
+	"github.com/go-yaml/yaml"
 )
 
-type Config struct {
-	AppName     string         `json:"app_name"`
-	AppModel    string         `json:"app_model"`
-	AppHost     string         `json:"app_host"`
-	AppPort     string         `json:"app_port"`
-	Database    DatabaseConfig `json:"database"`
-	RedisConfig RedisConfig    `json:"redis_config"`
+type Configuration struct {
+	AppHost            string   `yaml:"app_host"`    // app_host
+	AppPort            string    `yaml:"app_port"`   // app_port
+	PageSize           int      `yaml:"page_size"`   // page_size
+
 }
 
-type DatabaseConfig struct {
-	Driver   string `json:"driver"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	DbName   string `json:"db_name"`
-	Chartset string `json:"charset"`
-	ShowSql  bool   `json:"show_sql"`
-}
+const (
+	DEFAULT_PAGESIZE = 10
+)
 
-//Redis属性定义
-type RedisConfig struct {
-	Addr     string `json:"addr"`
-	Port     string `json:"port"`
-	Password string `json:"password"`
-	Db       int    `json:"db"`
-}
+var configuration *Configuration
 
-//方法或者变量首字母大写, 表示对外可见
-func GetConfig() *Config {
-	return cfg
-}
-
-//全局变量 对外不可见
-var cfg *Config = nil
-
-func ParseConfig(path string) (*Config, error) {
-	file, err := os.Open(path)
-	defer file.Close()
-
+func LoadConfiguration(path string) error {
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	reader := bufio.NewReader(file)
-	decoder := json.NewDecoder(reader)
-	if err = decoder.Decode(&cfg); err != nil {
-		return nil, err
+	var config Configuration
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		return err
 	}
-	return cfg, nil
+	if config.PageSize <= 0 {
+		config.PageSize = DEFAULT_PAGESIZE
+	}
+	configuration = &config
+	return err
 }
+
+//获取配置
+func GetConfiguration() *Configuration {
+	return configuration
+}
+
+//读取配置
+func init()  {
+	configFilePath := flag.String("C", "conf/config.yaml", "config file path")
+	flag.Parse()
+
+	if err := LoadConfiguration(*configFilePath); err != nil {
+		panic(err)
+		return
+	}
+}
+
+//conf.GetConfiguration().PageSize
