@@ -3,7 +3,8 @@ app_host: "127.0.0.1"
 app_port: 8090
 
 #mysql
-mysql_host: "127.0.0.1"
+mysql_host: "47.94.136.121"
+#mysql_host: "127.0.0.1"
 mysql_port: 3306
 mysql_database: "gotest"
 mysql_username: "root"

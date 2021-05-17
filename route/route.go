@@ -7,16 +7,19 @@ import (
 	"sea/handler"
 )
 
-func Route()  {
+func Route() {
 	route := gin.Default()
 	route.Use(handler.Recover)
-
-	route.GET("/index", controllers.Index)
-	route.GET("/redis", controllers.Redis)
-	route.POST("/login", controllers.Login)
-	route.GET("/userinfo", controllers.UserInfo)
-	route.POST("/register", controllers.Register)
-	route.Run(":"+conf.GetConfiguration().AppPort)
+	{
+		tokenOn := route.Group("/")
+		tokenOn.Use(handler.TokenOn)
+		{
+			tokenOn.GET("/index", controllers.Index)
+			tokenOn.GET("/redis", controllers.Redis)
+			tokenOn.GET("/userinfo", controllers.UserInfo)
+		}
+		route.POST("/register", controllers.Register)
+		route.POST("/login", controllers.Login)
+	}
+	route.Run(":" + conf.GetConfiguration().AppPort)
 }
-
-

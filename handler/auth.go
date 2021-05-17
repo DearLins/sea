@@ -1,15 +1,18 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"time"
 )
 
 //用户信息类，作为生成token的参数
 type UserClaims struct {
-	Password  string `json:"password"`
-	Phone string `json:"phone"`
+	Id       int    `json:"id"`
+	Password string `json:"password"`
+	Phone    string `json:"phone"`
 	//jwt-go提供的标准claim
 	jwt.StandardClaims
 }
@@ -20,7 +23,7 @@ var (
 	//该路由下不校验token
 	noVerify = []interface{}{"/login", "/ping"}
 	//token有效时间（纳秒） 这里因为使用了redis做处理，所以过期时间设置为无限大
-	effectTime = 10 * 365 * 24 * time.Hour
+	effectTime = 10 * 365 * 24 * 60 * 60 * time.Second
 )
 
 // 生成token
@@ -53,6 +56,35 @@ func JwtVerify(c *gin.Context) {
 	//验证token，并存储在请求中
 	c.Set("user", parseToken(token))
 	c.Set("token", token)
+}
+
+//设置token的过期时间
+func IntoCache(id int, token string) {
+	rdb := InitClient()
+	err := rdb.Set("token"+strconv.Itoa(id), token, 30*24*60*60*time.Second).Err()
+	if err != nil {
+		panic(err)
+	}
+}
+
+//中间件验证用户登录状态
+func TokenOn(c *gin.Context) {
+	token := c.GetHeader("token")
+	if token == "" {
+		panic("token not exist !")
+	}
+	user := parseToken(token)
+	rdb := InitClient()
+	expire, err := rdb.TTL("token" + strconv.Itoa(user.Id)).Result()
+	fmt.Println(expire)
+	if err != nil {
+		panic(err)
+	}
+	if expire < 0 {
+		panic("Token Exists")
+	}
+	IntoCache(user.Id, token)
+
 }
 
 // 解析Token
@@ -90,7 +122,3 @@ func Refresh(tokenString string) string {
 	claims.StandardClaims.ExpiresAt = time.Now().Add(2 * time.Hour).Unix()
 	return GenerateToken(claims)
 }
-
-
-
-
