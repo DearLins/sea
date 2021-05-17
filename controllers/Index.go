@@ -1,52 +1,47 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
-	"time"
 	"github.com/go-redis/redis"
+	_ "github.com/go-sql-driver/mysql"
+	"sea/handler"
+	"sea/modles"
 )
 
-type User struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
-
 func Index(c *gin.Context) {
-	db, err := sql.Open("mysql", "root:honglin1@tcp(47.94.136.121:3306)/gotest")
-	fmt.Println(db)
+	db := handler.Connect()
 	defer db.Close()
+	var user modles.User
+	stmt, err := db.Prepare("select id,username,phone,password from user where id =?")
 	if err != nil {
 		panic(err)
 	}
-	// See "Important settings" section.
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
-
-	stmt, err1 := db.Prepare("select * from user where id = ?")
 	defer stmt.Close()
-	if err1 != nil {
-		panic(err1)
+	rows, err := stmt.Query(1)
+	//fmt.Printf("%v \n%+v \n%#v \n", rows,rows,rows)
+	if err != nil{
+		panic(err)
 	}
-	//panic(err)
-	res := stmt.QueryRow(1)
-	var user User
-	err1 = res.Scan(&user.Id, &user.Name, &user.Age)
-
+	for rows.Next() {
+		err = rows.Scan(&user.Id, &user.Username,&user.Phone,&user.Password)
+	}
 	c.JSON(200, gin.H{
-		"user": user,
+		"code": 0,
+		"msg": "ok",
+		"data": gin.H{
+			"id":user.Id,
+			"phone":user.Phone,
+			"username":user.Username,
+			"password":user.Password,
+		},
 	})
-
 }
 
 
 func Redis(c *gin.Context) {
-	initClient()
-	redisExample()
+	rdb := handler.InitClient()
+	redisExample(rdb)
 	// 初始化连接
 	var user int
 	c.JSON(200, gin.H{
@@ -55,23 +50,7 @@ func Redis(c *gin.Context) {
 
 }
 
-var rdb *redis.Client
-
-func initClient() (err error) {
-	rdb = redis.NewClient(&redis.Options{
-		Addr:     "47.94.136.121:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
-	_, err = rdb.Ping().Result()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func redisExample() {
+func redisExample(rdb *redis.Client) {
 	err := rdb.Set("score", 100, 0).Err()
 	if err != nil {
 		fmt.Printf("set score failed, err:%v\n", err)
@@ -95,4 +74,5 @@ func redisExample() {
 		fmt.Println("name", val2)
 	}
 }
+
 
