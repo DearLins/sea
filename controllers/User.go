@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sea/handler"
 	"sea/modles"
+	"strconv"
 	"time"
 )
 
@@ -120,6 +121,24 @@ func IsToken(c *gin.Context) {
 
 }
 
+//用户推出
+func Logout(c *gin.Context) {
+	handler.JwtVerify(c)
+	id,err := c.Get("id")
+	if !err {
+		panic("获取用户信息失败")
+	}
+	//fmt.Println("type:", reflect.TypeOf(id))
+	rdb := handler.InitClient()
+	res := rdb.Del("token" +strconv.Itoa(id.(int)))
+	if res != nil{
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0,
+			"msg":  "ok",
+		})
+	}
+}
+
 func UserInfo(c *gin.Context) {
 	handler.JwtVerify(c)
 	user, ok := c.Get("user") //取值 实现了跨中间件取值
@@ -132,3 +151,4 @@ func UserInfo(c *gin.Context) {
 		"data": user,
 	})
 }
+

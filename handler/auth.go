@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -54,7 +53,10 @@ func JwtVerify(c *gin.Context) {
 		panic("token not exist !")
 	}
 	//验证token，并存储在请求中
-	c.Set("user", parseToken(token))
+	user := parseToken(token)
+	c.Set("user", user)
+	c.Set("id", user.Id)
+	c.Set("phone", user.Phone)
 	c.Set("token", token)
 }
 
@@ -76,7 +78,7 @@ func TokenOn(c *gin.Context) {
 	user := parseToken(token)
 	rdb := InitClient()
 	expire, err := rdb.TTL("token" + strconv.Itoa(user.Id)).Result()
-	fmt.Println(expire)
+	//fmt.Println(expire)
 	if err != nil {
 		panic(err)
 	}
@@ -122,3 +124,4 @@ func Refresh(tokenString string) string {
 	claims.StandardClaims.ExpiresAt = time.Now().Add(2 * time.Hour).Unix()
 	return GenerateToken(claims)
 }
+

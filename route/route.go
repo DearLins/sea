@@ -17,6 +17,7 @@ func Route() {
 			tokenOn.GET("/index", controllers.Index)
 			tokenOn.GET("/redis", controllers.Redis)
 			tokenOn.GET("/userinfo", controllers.UserInfo)
+			tokenOn.GET("/logout", controllers.Logout)
 		}
 		route.POST("/register", controllers.Register)
 		route.POST("/login", controllers.Login)
