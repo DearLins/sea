@@ -77,6 +77,14 @@ func TokenOn(c *gin.Context) {
 	}
 	user := parseToken(token)
 	rdb := InitClient()
+	//验证是否相等
+	token1,err := rdb.Get("token" + strconv.Itoa(user.Id)).Result()
+	if err != nil {
+		panic(err)
+	}
+	if token != token1 {
+		panic("Token Exists")
+	}
 	expire, err := rdb.TTL("token" + strconv.Itoa(user.Id)).Result()
 	//fmt.Println(expire)
 	if err != nil {
