@@ -2,9 +2,9 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"sea/conf"
-	"sea/controllers"
-	"sea/handler"
+	"sea_mod/conf"
+	"sea_mod/controllers"
+	"sea_mod/handler"
 )
 
 func Route() {

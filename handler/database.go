@@ -2,7 +2,7 @@ package handler
 
 import (
 	"database/sql"
-	"sea/conf"
+	"sea_mod/conf"
 	"time"
 )
 

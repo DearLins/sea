@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
-	"sea/handler"
-	"sea/modles"
+	"sea_mod/handler"
+	"sea_mod/modles"
 )
 
 func Index(c *gin.Context) {

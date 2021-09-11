@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/go-redis/redis"
-	"sea/conf"
+	"sea_mod/conf"
 )
 
 var rdb *redis.Client

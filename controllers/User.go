@@ -5,8 +5,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sea/handler"
-	"sea/modles"
+	"sea_mod/handler"
+	"sea_mod/modles"
 	"strconv"
 	"time"
 )

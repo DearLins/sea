@@ -1,4 +1,4 @@
-module sea
+module sea_mod
 
 go 1.15
 
