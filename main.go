@@ -6,7 +6,7 @@ import (
 )
 
 func main()  {
-	//注释12121
+	//注释1122
 	gin.SetMode(gin.DebugMode)
 	route.Route()
 }
