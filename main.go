@@ -6,9 +6,7 @@ import (
 )
 
 func main() {
-	//注释1122
-	//测试bug
-	//main冲突
+	//删除注释
 	gin.SetMode(gin.DebugMode)
 	route.Route()
 }
