@@ -7,6 +7,7 @@ import (
 
 func main() {
 	//删除注释
+	//bug
 	gin.SetMode(gin.DebugMode)
 	route.Route()
 }
